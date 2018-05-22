@@ -8,7 +8,7 @@
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/MortarBot/bin/Debug/netcoreapp2.1/MortarBot.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/MortarBot",
+      "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "stopAtEntry": false,
       "internalConsoleOptions": "openOnSessionStart"
