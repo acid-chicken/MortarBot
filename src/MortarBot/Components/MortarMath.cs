@@ -9,7 +9,7 @@ namespace MortarBot
 {
     public static class MortarMath
     {
-        private static Random _randomizer
+        private static readonly Random _randomizer
             = new Random();
         private static IDictionary<string, Func<decimal, decimal>> _functions
             = new Dictionary<string, Func<decimal, decimal>>()
@@ -58,7 +58,7 @@ namespace MortarBot
             {
                 switch (c)
                 {
-                    case '+' when (!isSignAllowed && depth == 0):
+                    case '+' when !isSignAllowed && depth == 0:
                     {
                         var value = CalculateItem(buffer.ToString());
                         items.Add(isAdding ? value : -value);
@@ -67,7 +67,7 @@ namespace MortarBot
                         isSignAllowed = true;
                         break;
                     }
-                    case '-' when (!isSignAllowed && depth == 0):
+                    case '-' when !isSignAllowed && depth == 0:
                     {
                         var value = CalculateItem(buffer.ToString());
                         items.Add(isAdding ? value : -value);
@@ -85,8 +85,8 @@ namespace MortarBot
                         isSignAllowed = true;
                         break;
                     }
-                    case '(' when (depth++ == 0):
-                    case ')' when (--depth == 0):
+                    case '(' when depth++ == 0:
+                    case ')' when --depth == 0:
                     default:
                     {
                         buffer.Append(c);
@@ -105,7 +105,7 @@ namespace MortarBot
 
         private static decimal CalculateItem(string itemFormula)
         {
-            var factors = new List<(decimal value, bool isMultiplying)>(itemFormula.Length);
+            var factors = new List<(Func<decimal> value, bool isMultiplying)>(itemFormula.Length);
             var buffer = new StringBuilder(itemFormula.Length);
             var depth = 0;
             var nameLength = 0;
@@ -116,14 +116,14 @@ namespace MortarBot
             {
                 switch (c)
                 {
-                    case '*' when (depth == 0):
+                    case '*' when depth == 0:
                     {
                         var value = buffer.ToString();
                         var result = isNumberOnly ?
-                            decimal.Parse(value) :
+                            () => decimal.Parse(value) :
                             isEndingWithNumber ?
-                                _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))) :
-                                _constants[value];
+                                (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)))):
+                                () => _constants[value];
                         factors.Add((result, isMultiplying));
                         buffer.Clear();
                         isEndingWithNumber =
@@ -131,14 +131,14 @@ namespace MortarBot
                         isNumberOnly = true;
                         break;
                     }
-                    case '/' when (depth == 0):
+                    case '/' when depth == 0:
                     {
                         var value = buffer.ToString();
                         var result = isNumberOnly ?
-                            decimal.Parse(value) :
+                            () => decimal.Parse(value) :
                             isEndingWithNumber ?
-                                _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))) :
-                                _constants[value];
+                                (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)))):
+                                () => _constants[value];
                         factors.Add((result, isMultiplying));
                         buffer.Clear();
                         isEndingWithNumber =
@@ -146,14 +146,14 @@ namespace MortarBot
                         isMultiplying = false;
                         break;
                     }
-                    case '(' when (depth++ == 0 && buffer.Length != 0):
+                    case '(' when depth++ == 0 && buffer.Length != 0:
                     {
                         var value = buffer.ToString();
                         var result = isNumberOnly ?
-                            decimal.Parse(value) :
+                            () => decimal.Parse(value) :
                             isEndingWithNumber ?
-                                _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))) :
-                                _constants[value];
+                                (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)))):
+                                () => _constants[value];
                         factors.Add((result, isMultiplying));
                         buffer.Clear();
                         isEndingWithNumber =
@@ -166,9 +166,10 @@ namespace MortarBot
                     {
                         break;
                     }
-                    case ')' when (--depth == 0):
+                    case ')' when --depth == 0:
                     {
-                        var result = Calculate(buffer.ToString());
+                        var value = buffer.ToString();
+                        var result = (Func<decimal>)(() => Calculate(value));
                         factors.Add((result, isMultiplying));
                         buffer.Clear();
                         isEndingWithNumber =
@@ -176,19 +177,19 @@ namespace MortarBot
                         isNumberOnly = true;
                         break;
                     }
-                    case '+' when (depth == 0):
-                    case '-' when (depth == 0):
-                    case '.' when (depth == 0):
-                    case '0' when (depth == 0):
-                    case '1' when (depth == 0):
-                    case '2' when (depth == 0):
-                    case '3' when (depth == 0):
-                    case '4' when (depth == 0):
-                    case '5' when (depth == 0):
-                    case '6' when (depth == 0):
-                    case '7' when (depth == 0):
-                    case '8' when (depth == 0):
-                    case '9' when (depth == 0):
+                    case '+' when depth == 0:
+                    case '-' when depth == 0:
+                    case '.' when depth == 0:
+                    case '0' when depth == 0:
+                    case '1' when depth == 0:
+                    case '2' when depth == 0:
+                    case '3' when depth == 0:
+                    case '4' when depth == 0:
+                    case '5' when depth == 0:
+                    case '6' when depth == 0:
+                    case '7' when depth == 0:
+                    case '8' when depth == 0:
+                    case '9' when depth == 0:
                     {
                         if (!isEndingWithNumber)
                         {
@@ -206,8 +207,8 @@ namespace MortarBot
                             {
                                 var value = buffer.ToString();
                                 var result = isNumberOnly ?
-                                    decimal.Parse(value) :
-                                    _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)));
+                                    () => decimal.Parse(value) :
+                                    (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))));
                                 factors.Add((result, isMultiplying));
                                 buffer.Clear();
                                 isMultiplying = true;
@@ -224,13 +225,28 @@ namespace MortarBot
             {
                 var value = buffer.ToString();
                 var result = isNumberOnly ?
-                    decimal.Parse(buffer.ToString()) :
+                    () => decimal.Parse(value) :
                     isEndingWithNumber ?
-                        _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))) :
-                        _constants[value];
+                        (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)))) :
+                        () => _constants[value];
                 factors.Add((result, isMultiplying));
             }
-            return factors.Aggregate(1m, (x, n) => n.isMultiplying ? checked(x * n.value) : checked(x / n.value));
+            return factors.Aggregate((value: 1m, previous: 1m), (x, n) =>
+            {
+                checked
+                {
+                    if (x.value == 0m)
+                        return (0m, 0m);
+                    var now = n.isMultiplying && x.previous % 1m == 0m ?
+                        Enumerable.Repeat(0, decimal.ToInt32(Math.Abs(x.previous)))
+                            .Select(_ => n.value())
+                            .Sum() / Math.Abs(x.previous) :
+                        n.value();
+                    return (n.isMultiplying ?
+                        x.value * now :
+                        x.value / now, now);
+                }
+            }).value;
         }
     }
 }

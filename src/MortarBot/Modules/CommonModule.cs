@@ -74,7 +74,7 @@ namespace MortarBot
         public Task CalculateAsync([Summary("Formula"), Remainder] string formula)
             => ReplyAsync(Context.User.Mention,
                 embed: new EmbedBuilder().WithTitle("Calculation Result")
-                    .WithDescription(MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString())
+                    .WithDescription(MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString().TrimEnd('0').TrimEnd('.'))
                     .WithCurrentTimestamp()
                     .WithColor(Assets.Blue)
                     .WithFooter("MortarMath - MortarBot")
