@@ -66,8 +66,19 @@ namespace MortarBot
             }
         }
 
-        [Command("echo"), Summary("Reply the same."), Alias("reply")]
+        [Command("echo"), Summary("Reply the same."), Alias("reply", "<")]
         public Task EchoAsync([Summary("Context"), Remainder] string context)
             => ReplyAsync($"{Context.User.Mention} {context}");
+
+        [Command("calculate"), Summary("Calculates the MortarMath formula."), Alias("calc", "=")]
+        public Task CalculateAsync([Summary("Formula"), Remainder] string formula)
+            => ReplyAsync(Context.User.Mention,
+                embed: new EmbedBuilder().WithTitle("Calculation Result")
+                    .WithDescription(MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString())
+                    .WithCurrentTimestamp()
+                    .WithColor(Assets.Blue)
+                    .WithFooter("MortarMath - MortarBot")
+                    .WithAuthor(Context.User)
+                    .Build());
     }
 }
