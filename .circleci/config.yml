@@ -1,0 +1,73 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: microsoft/dotnet:2.1-sdk
+        environment:
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+          NUGET_XMLDOC_MODE: skip
+    steps:
+      - checkout
+      - run:
+          name: Checking SDK Version
+          command: |
+            dotnet --version > VERSION
+      - restore_cache:
+          keys:
+            - nuget-v1-arch-{{ arch }}-env-{{ .Environment.variableName }}-sdk-{{ checksum "VERSION" }}-nuget-{{ checksum "src/MortarBot/MortarBot.csproj" }}-{{ checksum "src/MortarBot.Tests/MortarBot.Tests.csproj" }}
+            - nuget-v1-
+      - run:
+          name: Restore NuGet Packages
+          command: |
+            dotnet restore
+      - save_cache:
+          key: nuget-v1-arch-{{ arch }}-env-{{ .Environment.variableName }}-sdk-{{ checksum "VERSION" }}-nuget-{{ checksum "src/MortarBot/MortarBot.csproj" }}-{{ checksum "src/MortarBot.Tests/MortarBot.Tests.csproj" }}
+          paths:
+            - ~/.nuget/
+      - run:
+          name: Build Project
+          command: |
+            dotnet build
+      - store_artifacts:
+          path: obj/Debug/netcoreapp2.1/
+          destination: Debug-netcoreapp2.1
+  test:
+    docker:
+      - image: microsoft/dotnet:2.1-sdk
+        environment:
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+          NUGET_XMLDOC_MODE: skip
+    steps:
+      - checkout
+      - run:
+          name: Checking SDK Version
+          command: |
+            dotnet --version > VERSION
+      - restore_cache:
+          keys:
+            - nuget-v1-arch-{{ arch }}-env-{{ .Environment.variableName }}-sdk-{{ checksum "VERSION" }}-nuget-{{ checksum "src/MortarBot/MortarBot.csproj" }}-{{ checksum "src/MortarBot.Tests/MortarBot.Tests.csproj" }}
+            - nuget-v1-
+      - run:
+          name: Restore NuGet Packages
+          command: |
+            dotnet restore
+      - save_cache:
+          key: nuget-v1-arch-{{ arch }}-env-{{ .Environment.variableName }}-sdk-{{ checksum "VERSION" }}-nuget-{{ checksum "src/MortarBot/MortarBot.csproj" }}-{{ checksum "src/MortarBot.Tests/MortarBot.Tests.csproj" }}
+          paths:
+            - ~/.nuget/
+      - run:
+          name: Test units
+          command: |
+            cd src/MortarBot.Tests
+            dotnet xunit -xml ~/TestResult/xunit.xml
+      - store_test_results:
+          path: ~/TestResult/
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
