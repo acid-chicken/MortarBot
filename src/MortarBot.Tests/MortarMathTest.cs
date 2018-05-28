@@ -41,6 +41,7 @@ namespace MortarBot.Tests
         public void ConstantTest()
         {
             Assert.Equal(2000m, Calculate("maxcpu"));
+            Assert.Equal(-2000m, Calculate("-maxcpu"));
             Assert.Equal(2000m, Calculate("maxcpu+maxcpu-maxcpu*maxcpu/maxcpu"));
             Assert.Equal(16000000000000m, Calculate("maxcpu(maxcpu)(maxcpu)maxcpu"));
         }
@@ -48,6 +49,8 @@ namespace MortarBot.Tests
         [Fact]
         public void FunctionTest()
         {
+            Assert.Equal(1m, Calculate("cos0"));
+            Assert.Equal(-1m, Calculate("cos(-pi)"));
             Assert.InRange(Calculate("d6"), 1m, 6m);
             Assert.InRange(Calculate("2d6"), 2m, 12m);
         }

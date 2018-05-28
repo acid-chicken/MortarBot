@@ -11,8 +11,8 @@ namespace MortarBot
     {
         private static readonly Random _randomizer
             = new Random();
-        private static IDictionary<string, Func<decimal, decimal>> _functions
-            = new Dictionary<string, Func<decimal, decimal>>()
+        private static readonly IReadOnlyDictionary<string, Func<decimal, decimal>> _functions
+            = new SortedDictionary<string, Func<decimal, decimal>>()
             {
                 { "abs", x => checked(Math.Abs(x)) },
                 { "acos", x => checked(new decimal(Math.Acos(decimal.ToDouble(x)))) },
@@ -37,14 +37,19 @@ namespace MortarBot
                 { "sqrt", x => checked(new decimal(Math.Sqrt(decimal.ToDouble(x)))) },
                 { "tan", x => checked(new decimal(Math.Tan(decimal.ToDouble(x)))) },
                 { "tanh", x => checked(new decimal(Math.Tanh(decimal.ToDouble(x)))) },
-                { "truncate", x => checked(Math.Truncate(x)) }
+                { "truncate", x => checked(Math.Truncate(x)) },
+                { "√", x => checked(new decimal(Math.Sqrt(decimal.ToDouble(x)))) },
+                { "∛", x => checked(new decimal(Math.Cbrt(decimal.ToDouble(x)))) },
+                { "∜", x => checked(new decimal(Math.Sqrt(Math.Sqrt(decimal.ToDouble(x))))) }
             };
-        private static IDictionary<string, decimal> _constants
-            = new Dictionary<string, decimal>()
+        private static readonly IReadOnlyDictionary<string, decimal> _constants
+            = new SortedDictionary<string, decimal>()
             {
                 { "e", checked(new decimal(Math.E)) },
                 { "maxcpu", checked(2000m) },
-                { "pi", checked(new decimal(Math.PI)) }
+                { "pi", checked(new decimal(Math.PI)) },
+                { "π", checked(new decimal(Math.PI)) },
+                { "Π", checked(new decimal(Math.PI)) }
             };
 
         public static decimal Calculate(string formula)
@@ -107,6 +112,7 @@ namespace MortarBot
         {
             var factors = new List<(Func<decimal> value, bool isMultiplying)>(itemFormula.Length);
             var buffer = new StringBuilder(itemFormula.Length);
+            var unratedFunction = null as string;
             var depth = 0;
             var nameLength = 0;
             var isEndingWithNumber = true;
@@ -152,16 +158,24 @@ namespace MortarBot
                         var result = isNumberOnly ?
                             () => decimal.Parse(value) :
                             isEndingWithNumber ?
-                                (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength)))):
-                                () => _constants[value];
-                        factors.Add((result, isMultiplying));
+                                () => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))):
+                                    _constants.TryGetValue(value, out decimal constant) ?
+                                        () => constant :
+                                        null as Func<decimal>;
+                        if (result is null)
+                        {
+                            unratedFunction = value;
+                        }
+                        else
+                        {
+                            factors.Add((result, isMultiplying));
+                            isMultiplying = true;
+                        }
                         buffer.Clear();
                         isEndingWithNumber =
-                        isMultiplying =
                         isNumberOnly = true;
                         break;
                     }
-                    case '(':
                     case ',':
                     {
                         break;
@@ -170,7 +184,16 @@ namespace MortarBot
                     {
                         var value = buffer.ToString();
                         var result = (Func<decimal>)(() => Calculate(value));
-                        factors.Add((result, isMultiplying));
+                        if (string.IsNullOrEmpty(unratedFunction))
+                        {
+                            factors.Add((result, isMultiplying));
+                        }
+                        else
+                        {
+                            var function = unratedFunction;
+                            factors.Add((() => _functions[function](result()), isMultiplying));
+                            unratedFunction = null;
+                        }
                         buffer.Clear();
                         isEndingWithNumber =
                         isMultiplying =
@@ -207,7 +230,11 @@ namespace MortarBot
                             {
                                 var value = buffer.ToString();
                                 var result = isNumberOnly ?
-                                    () => decimal.Parse(value) :
+                                    () => value == "+" ?
+                                        1 :
+                                        value == "-" ?
+                                            -1 :
+                                            decimal.Parse(value) :
                                     (Func<decimal>)(() => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))));
                                 factors.Add((result, isMultiplying));
                                 buffer.Clear();
