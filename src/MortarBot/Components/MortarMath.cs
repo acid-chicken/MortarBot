@@ -176,6 +176,7 @@ namespace MortarBot
                         isNumberOnly = true;
                         break;
                     }
+                    case '(' when depth == 1:
                     case ',':
                     {
                         break;
