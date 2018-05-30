@@ -32,7 +32,7 @@ namespace MortarBot
                 .AddOptions()
                 .AddSingleton(client)
                 .AddSingleton(commands)
-                .AddLogging(configure => configure.SetMinimumLevel(LogLevel.Trace)
+                .AddLogging(configure => configure.SetMinimumLevel(int.TryParse(Configuration["Log:Level"], out int result) ? (LogLevel)result : LogLevel.Trace)
                     .AddConsole())
                 .BuildServiceProvider();
         }
@@ -73,9 +73,9 @@ namespace MortarBot
             var position = 0;
             switch (received.Channel)
             {
-                case IGuildChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:CommandPrefix"], ref position)):
-                case IGroupChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:CommandPrefix"], ref position)):
-                case IDMChannel    _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:CommandPrefix"], ref position) || true): break;
+                case IGuildChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position)):
+                case IGroupChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position)):
+                case IDMChannel    _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position) || true): break;
                 default: return;
             }
 
