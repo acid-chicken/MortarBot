@@ -56,6 +56,7 @@ namespace MortarBot
             commands.Log += e => LogAsync(e, logger);
 
             client.MessageReceived += e => HandleCommandAsync(e, commands, client);
+            client.ReactionAdded += (message, channel, reaction) => HandleReactionAsync(message, channel, reaction, client);
             client.Ready += () => StartClockAsync(client);
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -64,6 +65,15 @@ namespace MortarBot
             await client.StartAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> cacheableMessage, ISocketMessageChannel channel, SocketReaction reaction, DiscordSocketClient client)
+        {
+            var message = await cacheableMessage.GetOrDownloadAsync();
+            if (message.Author == client.CurrentUser &&
+                message.MentionedUserIds.Contains(reaction.UserId) &&
+                reaction.Emote.Name == "\ud83d\udeab")
+                await message.DeleteAsync();
         }
 
         private Task StartClockAsync(DiscordSocketClient client)
