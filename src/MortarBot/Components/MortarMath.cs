@@ -159,7 +159,7 @@ namespace MortarBot
                             () => decimal.Parse(value) :
                             isEndingWithNumber ?
                                 () => _functions[value.Substring(0, nameLength)](decimal.Parse(value.Substring(nameLength))):
-                                    _constants.TryGetValue(value, out decimal constant) ?
+                                    _constants.TryGetValue(value, out var constant) ?
                                         () => constant :
                                         null as Func<decimal>;
                         if (result is null)
