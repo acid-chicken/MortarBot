@@ -52,12 +52,12 @@ namespace MortarBot
             var commands = Services.GetService<CommandService>();
 
             var logger = Services.GetService<ILogger<Program>>();
-            client.Log += e => LogAsync(e, logger);
-            commands.Log += e => LogAsync(e, logger);
+            client.Log += message => LogAsync(message, logger);
+            commands.Log += message => LogAsync(message, logger);
 
-            client.MessageReceived += e => HandleCommandAsync(e, commands, client);
             client.ReactionAdded += (message, channel, reaction) => HandleReactionAsync(message, channel, reaction, client);
             client.Ready += () => StartClockAsync(client);
+            client.MessageReceived += message => HandleCommandAsync(message, commands, client);
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
