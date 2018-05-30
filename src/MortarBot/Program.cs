@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using TimeZoneConverter;
 
 namespace MortarBot
 {
@@ -54,6 +56,7 @@ namespace MortarBot
             commands.Log += e => LogAsync(e, logger);
 
             client.MessageReceived += e => HandleCommandAsync(e, commands, client);
+            client.Ready += () => StartClockAsync(client);
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
@@ -62,6 +65,47 @@ namespace MortarBot
 
             await Task.Delay(-1);
         }
+
+        private Task StartClockAsync(DiscordSocketClient client)
+            => Task.WhenAny(Task.CompletedTask,
+                Task.Run(async () =>
+                {
+                    var interval = int.Parse(Configuration["Discord:Clock:Interval"]);
+                    foreach (var timeZone in new List<(string name, TimeZoneInfo info)>()
+                    {
+                        ("\ud83c\udde6\ud83c\uddf7 Argentina",     TZConvert.TryGetTimeZoneInfo("America/Argentina/Buenos_Aires", out var buenosAires) ? buenosAires : null),
+                        ("\ud83c\udde6\ud83c\uddfa Australia",     TZConvert.TryGetTimeZoneInfo("Australia/Sydney",               out var sydney)      ? sydney      : null),
+                        ("\ud83c\udde7\ud83c\uddfe Belarus",       TZConvert.TryGetTimeZoneInfo("Europe/Minsk",                   out var minsk)       ? minsk       : null),
+                        ("\ud83c\udde7\ud83c\uddea Belgium",       TZConvert.TryGetTimeZoneInfo("Europe/Brussels",                out var brussels)    ? brussels    : null),
+                        ("\ud83c\udde7\ud83c\uddf7 Brazil",        TZConvert.TryGetTimeZoneInfo("America/Sao_Paulo",              out var saoPaulo)    ? saoPaulo    : null),
+                        ("\ud83c\udde8\ud83c\udde6 Canada",        TZConvert.TryGetTimeZoneInfo("America/Toronto",                out var toronto)     ? toronto     : null),
+                        ("\ud83c\udde8\ud83c\uddf3 China",         TZConvert.TryGetTimeZoneInfo("Asia/Shanghai",                  out var shanghai)    ? shanghai    : null),
+                        ("\ud83c\udde9\ud83c\uddf0 Denmark",       TZConvert.TryGetTimeZoneInfo("Europe/Copenhagen",              out var copenhagen)  ? copenhagen  : null),
+                        ("\ud83c\uddeb\ud83c\uddf7 France",        TZConvert.TryGetTimeZoneInfo("Europe/Paris",                   out var paris)       ? paris       : null),
+                        ("\ud83c\udde9\ud83c\uddea Germany",       TZConvert.TryGetTimeZoneInfo("Europe/Berlin",                  out var berlin)      ? berlin      : null),
+                        ("\ud83c\udde9\ud83c\uddea Great Britain", TZConvert.TryGetTimeZoneInfo("Europe/London",                  out var london)      ? london      : null),
+                        ("\ud83c\uddf0\ud83c\uddff Kazakhstan",    TZConvert.TryGetTimeZoneInfo("Asia/Almaty",                    out var almaty)      ? almaty      : null),
+                        ("\ud83c\uddee\ud83c\uddf8 Iceland",       TZConvert.TryGetTimeZoneInfo("Atlantic/Reykjavik",             out var reykjavik)   ? reykjavik   : null),
+                        ("\ud83c\uddee\ud83c\uddea Ireland",       TZConvert.TryGetTimeZoneInfo("Europe/Dublin",                  out var dublin)      ? dublin      : null),
+                        ("\ud83c\uddee\ud83c\uddf9 Italy",         TZConvert.TryGetTimeZoneInfo("Europe/Rome",                    out var rome)        ? rome        : null),
+                        ("\ud83c\uddef\ud83c\uddf5 Japan",         TZConvert.TryGetTimeZoneInfo("Asia/Tokyo",                     out var tokyo)       ? tokyo       : null),
+                        ("\ud83c\uddf3\ud83c\uddf1 Netherlands",   TZConvert.TryGetTimeZoneInfo("Europe/Amsterdam",               out var amsterdam)   ? amsterdam   : null),
+                        ("\ud83c\uddf3\ud83c\uddff New Zealand",   TZConvert.TryGetTimeZoneInfo("Pacific/Auckland",               out var auckland)    ? auckland    : null),
+                        ("\ud83c\uddf5\ud83c\uddf1 Poland",        TZConvert.TryGetTimeZoneInfo("Europe/Warsaw",                  out var warsaw)      ? warsaw      : null),
+                        ("\ud83c\uddf0\ud83c\uddf7 South Korea",   TZConvert.TryGetTimeZoneInfo("Asia/Seoul",                     out var seoul)       ? seoul       : null),
+                        ("\ud83c\uddf7\ud83c\uddfa Russia",        TZConvert.TryGetTimeZoneInfo("Europe/Moscow",                  out var moscow)      ? moscow      : null),
+                        ("\ud83c\uddea\ud83c\uddf8 Spain",         TZConvert.TryGetTimeZoneInfo("Europe/Madrid",                  out var madrid)      ? madrid      : null),
+                        ("\ud83c\uddf8\ud83c\uddea Sweden",        TZConvert.TryGetTimeZoneInfo("Europe/Stockholm",               out var stockholm)   ? stockholm   : null),
+                        ("\ud83c\uddf9\ud83c\uddf7 Turkish",       TZConvert.TryGetTimeZoneInfo("Europe/Istanbul",                out var istanbul)    ? istanbul    : null),
+                        ("\ud83c\uddfa\ud83c\udde6 Ukraine",       TZConvert.TryGetTimeZoneInfo("Europe/Kiev",                    out var kiev)        ? kiev        : null),
+                        ("\ud83c\uddfa\ud83c\uddf8 USA",           TZConvert.TryGetTimeZoneInfo("America/New_York",               out var newYork)     ? newYork     : null)
+                    }.ToInfinite())
+                    {
+                        if (!(timeZone.info is null))
+                            await Task.WhenAll(Task.Delay(interval),
+                                client.SetGameAsync($"{TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, timeZone.info):HH:mm} {timeZone.name}", type: ActivityType.Watching));
+                    }
+                }));
 
         private async Task HandleCommandAsync(SocketMessage message, CommandService commands, DiscordSocketClient client)
         {
