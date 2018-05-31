@@ -93,7 +93,7 @@ namespace MortarBot
                         ("\ud83c\udde9\ud83c\uddf0 Copenhagen, Denmark",     TZConvert.TryGetTimeZoneInfo("Europe/Copenhagen",              out var copenhagen)  ? copenhagen  : null),
                         ("\ud83c\uddeb\ud83c\uddf7 Paris, France",           TZConvert.TryGetTimeZoneInfo("Europe/Paris",                   out var paris)       ? paris       : null),
                         ("\ud83c\udde9\ud83c\uddea Berlin, Germany",         TZConvert.TryGetTimeZoneInfo("Europe/Berlin",                  out var berlin)      ? berlin      : null),
-                        ("\ud83c\udde9\ud83c\uddea London, Great Britain",   TZConvert.TryGetTimeZoneInfo("Europe/London",                  out var london)      ? london      : null),
+                        ("\ud83c\uddec\ud83c\udde7 London, Great Britain",   TZConvert.TryGetTimeZoneInfo("Europe/London",                  out var london)      ? london      : null),
                         ("\ud83c\uddf0\ud83c\uddff Almaty, Kazakhstan",      TZConvert.TryGetTimeZoneInfo("Asia/Almaty",                    out var almaty)      ? almaty      : null),
                         ("\ud83c\uddee\ud83c\uddf8 Reykjavik, Iceland",      TZConvert.TryGetTimeZoneInfo("Atlantic/Reykjavik",             out var reykjavik)   ? reykjavik   : null),
                         ("\ud83c\uddee\ud83c\uddea Dublin, Ireland",         TZConvert.TryGetTimeZoneInfo("Europe/Dublin",                  out var dublin)      ? dublin      : null),
