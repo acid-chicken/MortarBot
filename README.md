@@ -8,7 +8,7 @@ A Discord bot for Robocraft database.
 ## Installation
 
 1. Install [.NET Core SDK](https://dot.net/sdk) 2.1.300 or above.
-2. Execute `dotnet user-secrets --project src/MortarBot/MortarBot.csproj set '> YOUR BOT TOKEN GOES HERE <'`
+2. Execute `dotnet user-secrets --project src/MortarBot/MortarBot.csproj set 'Discord:Token' '> YOUR BOT TOKEN GOES HERE <'`
 3. Execute `dotnet run --project src/MortarBot/MortarBot.csproj`
 
 ## License
