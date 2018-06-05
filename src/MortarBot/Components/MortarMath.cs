@@ -52,6 +52,12 @@ namespace MortarBot
                 { "Π", checked(new decimal(Math.PI)) }
             };
 
+        public static string CalculateAsString(string formula)
+        {
+            var result = MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString().TrimEnd('0').TrimEnd('.');
+            return string.IsNullOrEmpty(result) ? "0" : result;
+        }
+
         public static decimal Calculate(string formula)
         {
             var items = new List<decimal>(formula.Length);
