@@ -38,7 +38,8 @@ namespace MortarBot
                                 .WithIsInline(true);
                         })
                         .ToList()
-                    }.WithTitle("Commands List")
+                    }
+                        .WithTitle("Commands List")
                         .WithDescription("That's all you can use.")
                         .WithCurrentTimestamp()
                         .WithColor(Assets.Blue)
@@ -52,11 +53,13 @@ namespace MortarBot
                 return ReplyAsync(Context.User.Mention,
                     embed: new EmbedBuilder()
                     {
-                        Fields = command.Parameters.Select(x => new EmbedFieldBuilder().WithName(x.Name)
+                        Fields = command.Parameters.Select(x => new EmbedFieldBuilder()
+                            .WithName(x.Name)
                             .WithValue(x.Summary)
                             .WithIsInline(true))
                         .ToList()
-                    }.WithTitle($"Usage of `{command.Name}`")
+                    }
+                        .WithTitle($"Usage of `{command.Name}`")
                         .WithDescription($"{command.Summary}\n```zsh\n{string.Join(' ', command.Parameters.Select(x => $"{(x.IsOptional ? "[" : "")}{x.Name}: {x.Type.Name}{(x.IsOptional ? "]" : "")}{(x.IsMultiple ? "..." : "")}"))}\n```")
                         .WithCurrentTimestamp()
                         .WithColor(Assets.Blue)
@@ -73,7 +76,8 @@ namespace MortarBot
         [Command("calculate"), Summary("Calculates the MortarMath formula."), Alias("calc", "=")]
         public Task CalculateAsync([Summary("Formula"), Remainder] string formula)
             => ReplyAsync(Context.User.Mention,
-                embed: new EmbedBuilder().WithTitle("Calculation Result")
+                embed: new EmbedBuilder()
+                    .WithTitle("Calculation Result")
                     .WithDescription(MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString().TrimEnd('0').TrimEnd('.'))
                     .WithCurrentTimestamp()
                     .WithColor(Assets.Blue)

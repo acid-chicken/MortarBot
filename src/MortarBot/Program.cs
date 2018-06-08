@@ -119,8 +119,7 @@ namespace MortarBot
 
         private async Task HandleCommandAsync(SocketMessage message, CommandService commands, DiscordSocketClient client)
         {
-            var received = message as SocketUserMessage;
-            if (received is null ||
+            if (!(message is SocketUserMessage received) ||
                 received.Author == client.CurrentUser ||
                 received.Author.IsBot) return;
 
@@ -140,7 +139,8 @@ namespace MortarBot
                 if (!result.IsSuccess)
                 {
                     await context.Channel.SendMessageAsync(context.User.Mention,
-                        embed: new EmbedBuilder().WithTitle("Command Error")
+                        embed: new EmbedBuilder()
+                            .WithTitle("Command Error")
                             .WithDescription(result.ErrorReason)
                             .WithCurrentTimestamp()
                             .WithColor(Assets.Red)
