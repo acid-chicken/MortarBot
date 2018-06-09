@@ -22,7 +22,7 @@ namespace MortarBot
         {
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile("appsettings.json", true, true)
                 .AddUserSecrets<Secrets>()
                 .Build();
 

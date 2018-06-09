@@ -13,6 +13,28 @@ A Discord bot for Robocraft database.
 2. Execute `dotnet user-secrets --project src/MortarBot/MortarBot.csproj set 'Discord:Token' '> YOUR BOT TOKEN GOES HERE <'`
 3. Execute `dotnet run --project src/MortarBot/MortarBot.csproj`
 
+## Configuration
+
+You can create appsettings.json to customize bot configurations.
+
+*Example:*
+
+```json
+{
+  "Discord": {
+    "Clock": {
+      "Interval": 15000
+    },
+    "Command": {
+      "Prefix": ";/"
+    }
+  },
+  "Log": {
+    "Level": 0
+  }
+}
+```
+
 ## License
 
 [MIT License](https://github.com/acid-chicken/MortarBot/blob/master/LICENSE)
