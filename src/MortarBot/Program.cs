@@ -24,6 +24,7 @@ namespace MortarBot
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appsettings.json", true, true)
                 .AddUserSecrets<Secrets>()
+                .AddCommandLine(args)
                 .Build();
 
             var client = new DiscordSocketClient();
