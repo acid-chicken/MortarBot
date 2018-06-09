@@ -34,7 +34,7 @@ namespace MortarBot
                 .AddOptions()
                 .AddSingleton(client)
                 .AddSingleton(commands)
-                .AddLogging(configure => configure.SetMinimumLevel(int.TryParse(Configuration["Log:Level"], out int result) ? (LogLevel)result : LogLevel.Trace)
+                .AddLogging(configure => configure.SetMinimumLevel(Configuration.GetValue("Log:Level", LogLevel.Trace))
                     .AddConsole())
                 .BuildServiceProvider();
         }
@@ -62,7 +62,10 @@ namespace MortarBot
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            await client.LoginAsync(TokenType.Bot, Configuration["Discord:Token"]);
+            var token = Configuration.GetValue("Discord:Token", default(string));
+            if (token is null)
+                throw new InvalidConfigurationException("The Discord token isn't set. Please execute `dotnet user-secrets set 'Discord:Token' '> YOUR BOT TOKEN GOES HERE <'`");
+            await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
 
             await Task.Delay(-1);
@@ -81,7 +84,7 @@ namespace MortarBot
             => Task.WhenAny(Task.CompletedTask,
                 Task.Run(async () =>
                 {
-                    var interval = int.Parse(Configuration["Discord:Clock:Interval"]);
+                    var interval = Configuration.GetValue("Discord:Clock:Interval", 15000);
                     foreach (var timeZone in new List<(string name, TimeZoneInfo info)>()
                     {
                         ("\ud83c\udde6\ud83c\uddf7 Buenos Aires, Argentina", TZConvert.TryGetTimeZoneInfo("America/Argentina/Buenos_Aires", out var buenosAires) ? buenosAires : null),
@@ -126,9 +129,9 @@ namespace MortarBot
             var position = 0;
             switch (received.Channel)
             {
-                case IGuildChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position)):
-                case IGroupChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position)):
-                case IDMChannel    _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration["Discord:Command:Prefix"], ref position) || true): break;
+                case IGuildChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration.GetValue("Discord:Command:Prefix", ""), ref position)):
+                case IGroupChannel _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration.GetValue("Discord:Command:Prefix", ""), ref position)):
+                case IDMChannel    _ when (received.HasMentionPrefix(client.CurrentUser, ref position) || received.HasStringPrefix(Configuration.GetValue("Discord:Command:Prefix", ""), ref position) || true): break;
                 default: return;
             }
 
