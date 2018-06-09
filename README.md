@@ -27,6 +27,21 @@ You can create *appsettings.json* to customize bot configurations.
     },
     "Command": {
       "Prefix": ";/"
+    },
+    "Delete": {
+      "Reaction": [
+        "\u23f9",
+        "\u2611",
+        "\u26d4",
+        "\u2705",
+        "\u2714",
+        "\u274c",
+        "\u274e",
+        "\ud83c\udd97",
+        "\ud83d\uddd1",
+        "\ud83d\udeab",
+        "\ud83d\uded1"
+      ]
     }
   },
   "Log": {
