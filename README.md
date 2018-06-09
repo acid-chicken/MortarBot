@@ -23,7 +23,35 @@ You can create *appsettings.json* to customize bot configurations.
 {
   "Discord": {
     "Clock": {
-      "Interval": 15000
+      "Interval": 15000,
+      "TimeZone": {
+        "America/Argentina/Buenos_Aires": "\ud83c\udde6\ud83c\uddf7 Buenos Aires, Argentina",
+        "Australia/Sydney": "\ud83c\udde6\ud83c\uddfa Sydney, Australia",
+        "Europe/Minsk": "\ud83c\udde7\ud83c\uddfe Brussels, Belarus",
+        "Europe/Brussels": "\ud83c\udde7\ud83c\uddea Brussels, Belgium",
+        "America/Sao_Paulo": "\ud83c\udde7\ud83c\uddf7 Sao Paulo, Brazil",
+        "America/Toronto": "\ud83c\udde8\ud83c\udde6 Toronto, Canada",
+        "Asia/Shanghai": "\ud83c\udde8\ud83c\uddf3 Shanghai, China",
+        "Europe/Copenhagen": "\ud83c\udde9\ud83c\uddf0 Copenhagen, Denmark",
+        "Europe/Paris": "\ud83c\uddeb\ud83c\uddf7 Paris, France",
+        "Europe/Berlin": "\ud83c\udde9\ud83c\uddea Berlin, Germany",
+        "Europe/London": "\ud83c\uddec\ud83c\udde7 London, Great Britain",
+        "Asia/Almaty": "\ud83c\uddf0\ud83c\uddff Almaty, Kazakhstan",
+        "Atlantic/Reykjavik": "\ud83c\uddee\ud83c\uddf8 Reykjavik, Iceland",
+        "Europe/Dublin": "\ud83c\uddee\ud83c\uddea Dublin, Ireland",
+        "Europe/Rome": "\ud83c\uddee\ud83c\uddf9 Rome, Italy",
+        "Asia/Tokyo": "\ud83c\uddef\ud83c\uddf5 Tokyo, Japan",
+        "Europe/Amsterdam": "\ud83c\uddf3\ud83c\uddf1 Amsterdam, Netherlands",
+        "Pacific/Auckland": "\ud83c\uddf3\ud83c\uddff Auckland, New Zealand",
+        "Europe/Warsaw": "\ud83c\uddf5\ud83c\uddf1 Warsaw, Poland",
+        "Asia/Seoul": "\ud83c\uddf0\ud83c\uddf7 Seoul, South Korea",
+        "Europe/Moscow": "\ud83c\uddf7\ud83c\uddfa Moscow, Russia",
+        "Europe/Madrid": "\ud83c\uddea\ud83c\uddf8 Madrid, Spain",
+        "Europe/Stockholm": "\ud83c\uddf8\ud83c\uddea Stockholm, Sweden",
+        "Europe/Istanbul": "\ud83c\uddf9\ud83c\uddf7 Istanbul, Turkish",
+        "Europe/Kiev": "\ud83c\uddfa\ud83c\udde6 Kiev, Ukraine",
+        "America/New_York": "\ud83c\uddfa\ud83c\uddf8 New York, USA"
+      }
     },
     "Command": {
       "Prefix": ";/"
