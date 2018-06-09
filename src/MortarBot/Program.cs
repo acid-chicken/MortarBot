@@ -120,7 +120,6 @@ namespace MortarBot
         private async Task HandleCommandAsync(SocketMessage message, CommandService commands, DiscordSocketClient client)
         {
             if (!(message is SocketUserMessage received) ||
-                received.Author == client.CurrentUser ||
                 received.Author.IsBot) return;
 
             var position = 0;
