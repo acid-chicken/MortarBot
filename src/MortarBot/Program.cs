@@ -75,9 +75,11 @@ namespace MortarBot
         private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> cacheableMessage, ISocketMessageChannel channel, SocketReaction reaction, DiscordSocketClient client)
         {
             var message = await cacheableMessage.GetOrDownloadAsync();
-            if (message.Author == client.CurrentUser &&
+            var reactions = new List<string>() as IEnumerable<string>;
+            Configuration.GetSection("Discord:Delete:Reaction").Bind(reactions);
+            if (message.Author.Id == client.CurrentUser.Id &&
                 message.MentionedUserIds.Contains(reaction.UserId) &&
-                reaction.Emote.Name == "\ud83d\udeab")
+                reactions.Contains(reaction.Emote.Name.Replace("\ufe0f", "")))
                 await message.DeleteAsync();
         }
 
