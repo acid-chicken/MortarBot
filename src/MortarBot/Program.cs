@@ -58,6 +58,7 @@ namespace MortarBot
             client.ReactionAdded += (message, channel, reaction) => HandleReactionAsync(message, channel, reaction, client);
             client.Ready += () => StartClockAsync(client);
             client.MessageReceived += message => HandleCommandAsync(message, commands, client);
+            client.MessageUpdated += (_, message, __) => HandleCommandAsync(message, commands, client);
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
