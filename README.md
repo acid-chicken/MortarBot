@@ -15,9 +15,9 @@ A Discord bot for Robocraft database.
 
 ## Configuration
 
-You can create appsettings.json to customize bot configurations.
+You can create *appsettings.json* to customize bot configurations.
 
-*Example:*
+**Example:**
 
 ```json
 {
