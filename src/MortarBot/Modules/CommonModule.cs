@@ -13,7 +13,7 @@ namespace MortarBot
     {
         public CommandService Commands { get; set; }
 
-        [Command("help"), Summary("Tells usage of the command.")]
+        [Command("help"), Summary("Tells usage of the command."), Alias("?")]
         public Task HelpAsync([Summary("The name of the command.")] string name = default)
         {
             if (string.IsNullOrEmpty(name))
