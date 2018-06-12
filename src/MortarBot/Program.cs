@@ -117,7 +117,7 @@ namespace MortarBot
             var context = new CommandContext(client, received);
             using (var typing = context.Channel.EnterTypingState())
             {
-                var result = await commands.ExecuteAsync(context, position);
+                var result = await commands.ExecuteAsync(context, position, Services);
                 if (!result.IsSuccess)
                 {
                     await context.Channel.SendMessageAsync(context.User.Mention,
