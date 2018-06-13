@@ -19,6 +19,7 @@ namespace MortarBot
             if (string.IsNullOrEmpty(name))
             {
                 return ReplyAsync(Context.User.Mention,
+                #region embed
                     embed: new EmbedBuilder()
                     {
                         Fields = Commands.Commands.Select(x =>
@@ -46,11 +47,15 @@ namespace MortarBot
                         .WithFooter("MortarBot")
                         .WithAuthor(Context.User)
                         .Build());
+                #endregion
             }
             else
             {
-                var command = Commands.Commands.FirstOrDefault(x => x.Name == name || x.Aliases.Contains(name)) ?? throw new ArgumentException($"The command `{name}` not found.");
+                var command =
+                    Commands.Commands.FirstOrDefault(x => x.Name == name || x.Aliases.Contains(name)) ??
+                    throw new ArgumentException($"The command `{name}` not found.");
                 return ReplyAsync(Context.User.Mention,
+                #region embed
                     embed: new EmbedBuilder()
                     {
                         Fields = command.Parameters.Select(x => new EmbedFieldBuilder()
@@ -66,6 +71,7 @@ namespace MortarBot
                         .WithFooter("MortarBot")
                         .WithAuthor(Context.User)
                         .Build());
+                #endregion
             }
         }
 
@@ -76,6 +82,7 @@ namespace MortarBot
         [Command("calculate"), Summary("Calculates the MortarMath formula."), Alias("calc", "=")]
         public Task CalculateAsync([Summary("Formula"), Remainder] string formula)
             => ReplyAsync(Context.User.Mention,
+            #region embed
                 embed: new EmbedBuilder()
                     .WithTitle("Calculation Result")
                     .WithDescription(MortarMath.CalculateAsString(formula))
@@ -84,5 +91,6 @@ namespace MortarBot
                     .WithFooter("MortarMath - MortarBot")
                     .WithAuthor(Context.User)
                     .Build());
+            #endregion
     }
 }

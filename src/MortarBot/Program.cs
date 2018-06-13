@@ -63,8 +63,7 @@ namespace MortarBot
 
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            var token = Configuration.GetValue("Discord:Token", default(string));
-            if (token is null)
+            var token = Configuration.GetValue("Discord:Token", default(string)) ??
                 throw new InvalidConfigurationException("The Discord token isn't set. Please execute `dotnet user-secrets set 'Discord:Token' '> YOUR BOT TOKEN GOES HERE <'`");
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
@@ -121,6 +120,7 @@ namespace MortarBot
                 if (!result.IsSuccess)
                 {
                     await context.Channel.SendMessageAsync(context.User.Mention,
+                    #region embed
                         embed: new EmbedBuilder()
                             .WithTitle("Command Error")
                             .WithDescription(result.ErrorReason)
@@ -129,6 +129,7 @@ namespace MortarBot
                             .WithFooter("MortarBot")
                             .WithAuthor(context.User)
                             .Build());
+                    #endregion
                 }
             }
         }
