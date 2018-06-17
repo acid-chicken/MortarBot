@@ -16,7 +16,7 @@ using TimeZoneConverter;
 
 namespace MortarBot
 {
-    public class Program
+    internal class Program
     {
         private Program(string[] args)
         {
@@ -40,9 +40,9 @@ namespace MortarBot
                 .BuildServiceProvider();
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
-        public IServiceProvider Services { get; }
+        private IServiceProvider Services { get; }
 
         private static Task Main(string[] args)
             => new Program(args).RunAsync();
