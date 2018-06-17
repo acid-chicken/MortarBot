@@ -54,18 +54,30 @@ namespace MortarBot
                 var command =
                     Commands.Commands.FirstOrDefault(x => x.Name == name || x.Aliases.Contains(name)) ??
                     throw new ArgumentException($"The command `{name}` not found.");
+                var optional = command.Parameters.Any(x => x.IsOptional);
+                var remainder = command.Parameters.Any(x => x.IsRemainder);
+                var multiple = command.Parameters.Any(x => x.IsMultiple);
                 return ReplyAsync(Context.User.Mention,
                 #region embed
                     embed: new EmbedBuilder()
                     {
-                        Fields = command.Parameters.Select(x => new EmbedFieldBuilder()
-                            .WithName(x.Name)
-                            .WithValue(x.Summary)
-                            .WithIsInline(true))
-                        .ToList()
+                        Fields = command.Parameters
+                            .Select(x => new EmbedFieldBuilder()
+                                .WithName(x.Name)
+                                .WithValue(x.Summary)
+                                .WithIsInline(true))
+                            .ToList()
                     }
                         .WithTitle($"Usage of `{command.Name}`")
-                        .WithDescription($"{command.Summary}\n```zsh\n{string.Join(' ', command.Parameters.Select(x => $"{(x.IsOptional ? "[" : "")}{x.Name}: {x.Type.Name}{(x.IsOptional ? "]" : "")}{(x.IsMultiple ? "..." : "")}"))}\n```")
+                        .WithDescription(
+$@"{command.Summary}
+```ts
+{string.Join(' ', command.Parameters.Select(x => $"{(x.IsOptional ? "[" : x.IsRemainder ? "" : "<")}{x.Name}{(x.IsRemainder || x.IsMultiple ? "..." : "")}: {x.Type.Name}{(x.IsOptional ? $"] = {x.DefaultValue}" : x.IsRemainder ? "" : ">")}"))}
+```{(!(optional || remainder || multiple) ? @"
+`<arg>: type` is normal argument (you have quote the argument if it has space characters)" : "")}{(optional ? @"
+`[arg: type] = default_value` is optional argument (uses the default value if the argument isn't specified)": "")}{(remainder ? @"
+`arg...: type` is remainder argument (disables any separators)" : "")}{(multiple ? @"
+`<arg>...: type` is multiple argument (separated by the space character)" : "")}")
                         .WithCurrentTimestamp()
                         .WithColor(Assets.Blue)
                         .WithFooter("MortarBot")
