@@ -74,7 +74,7 @@ $@"{command.Summary}
 ```ts
 {string.Join(' ', command.Parameters.Select(x => $"{(x.IsOptional ? "[" : x.IsRemainder ? "" : "<")}{x.Name}{(x.IsRemainder || x.IsMultiple ? "..." : "")}: {x.Type.Name}{(x.IsOptional ? $"] = {x.DefaultValue}" : x.IsRemainder ? "" : ">")}"))}
 ```{(!(optional || remainder || multiple) ? @"
-`<arg>: type` is normal argument (you have quote the argument if it has space characters)" : "")}{(optional ? @"
+`<arg>: type` is normal argument (you have to quote the argument if it has space characters)" : "")}{(optional ? @"
 `[arg: type] = default_value` is optional argument (uses the default value if the argument isn't specified)": "")}{(remainder ? @"
 `arg...: type` is remainder argument (disables any separators)" : "")}{(multiple ? @"
 `<arg>...: type` is multiple argument (separated by the space character)" : "")}")
