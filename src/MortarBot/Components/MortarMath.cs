@@ -54,8 +54,8 @@ namespace MortarBot
 
         public static string CalculateAsString(string formula)
         {
-            var result = MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString().TrimEnd('0').TrimEnd('.');
-            return string.IsNullOrEmpty(result) ? "0" : result;
+            var result = MortarMath.Calculate(formula.ToLowerInvariant().Replace(" ", "")).ToString();
+            return result.Contains('.') ? result.TrimEnd('0').TrimEnd('.') : result;
         }
 
         public static decimal Calculate(string formula)
